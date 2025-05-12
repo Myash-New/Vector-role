@@ -1,0 +1,35 @@
+---
+- name: Download Vector distribution
+  ansible.builtin.get_url:
+    url: "https://github.com/vectordotdev/vector/releases/download/v{{ vector_version }}/vector-{{ vector_version }}-x86_64.tar.gz"
+    dest: "/tmp/vector-{{ vector_version }}.tar.gz"
+    mode: '0644'
+
+- name: Unarchive the Vector distribution
+  ansible.builtin.unarchive:
+    src: "/tmp/vector-{{ vector_version }}.tar.gz"
+    dest: "/opt/"
+    remote_src: true
+
+- name: Create Vector configuration file
+  ansible.builtin.template:
+    src: "vector_config.j2"
+    dest: "/opt/vector/config/vector.toml"
+    mode: '0644'
+
+- name: Ensure Vector binary is executable
+  ansible.builtin.file:
+    path: "/opt/vector/vector"
+    mode: '0755'
+
+- name: Install Vector (verify the binary)
+  ansible.builtin.command:
+    cmd: "/opt/vector/vector --help"
+  changed_when: false
+
+- name: Restart Vector if configuration changes
+  ansible.builtin.systemd:
+    name: vector
+    state: restarted
+  notify:
+    - Restart Vector
