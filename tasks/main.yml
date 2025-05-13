@@ -1,7 +1,8 @@
+
 ---
 - name: Download Vector distribution
   ansible.builtin.get_url:
-    url: "https://github.com/vectordotdev/vector/releases/download/v{{ vector_version }}/vector-{{ vector_version }}-x86_64.tar.gz"
+    url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.x86_64.rpm"
     dest: "/tmp/vector-{{ vector_version }}.tar.gz"
     mode: '0644'
 
