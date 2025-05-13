@@ -20,6 +20,23 @@
     - packages
     - install
 
+- name: Create systemd unit for Vector
+  ansible.builtin.template:
+    src: templates/vector.service.j2
+    dest: /etc/systemd/system/vector.service
+    mode: 0644
+  register: vector_service_created
+
+- name: Reload systemd after creating unit
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  when: vector_service_created.changed
+
+- name: Enable Vector service
+  ansible.builtin.systemd:
+    name: vector
+    enabled: yes
+
 - name: Deploy vector configuration
   ansible.builtin.template:
     src: templates/vector.j2
